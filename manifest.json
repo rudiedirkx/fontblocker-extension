@@ -1,0 +1,29 @@
+{
+	"name": "Font blocker",
+	"description": "Blocks the fonts you want to block.",
+	"version": "1.0",
+
+	"permissions": [ "storage", "contextMenus" ],
+
+	"options_page": "options/options.html",
+	"content_scripts": [
+		{
+			"all_frames": true,
+			"js": [ "fontblocker.content.js" ],
+			"matches": [ "http://*/*", "https://*/*" ],
+			"run_at": "document_end"
+		}
+	],
+	"background": {
+		"scripts": [ "fontblocker.background.js" ]
+	},
+
+	"icons": {
+		"128": "images/128x128.png",
+		"64": "images/64x64.png",
+		"48": "images/48x48.png",
+		"32": "images/32x32.png",
+		"16": "images/16x16.png"
+	},
+	"manifest_version": 2
+}
