@@ -54,8 +54,8 @@ chrome.extension.onMessage.addListener(function(message, sender, sendResponse) {
 				return font.trim() != '';
 			});
 
-			var font = fonts[0].trim();
-			if (confirm('Do you want to block "' + font + '" ?')) {
+			var font = fonts[0].replace(/^['"\s]+|['"\s]$/g, '');
+			if (confirm('Do you want to block\n\n' + font + '\n\n?')) {
 				addFonts([font]);
 				sendResponse(font);
 			}
