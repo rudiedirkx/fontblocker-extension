@@ -4,13 +4,26 @@
 <head>
 	<meta charset="utf-8" />
 	<title>FontBlocker Options</title>
+	<link rel="stylesheet" href="options.css" />
 </head>
 
 <body class="loading">
-	<p>Currently blocked:</p>
-	<ul id="fonts"></ul>
+	<h2>Blocked fonts</h2>
+	<table>
+		<thead>
+			<tr>
+				<th>Font name</th>
+				<th></th>
+				<th>Website</th>
+				<th>Date</th>
+			</tr>
+		</thead>
+		<tbody id="fonts"></tbody>
+	</table>
 
 	<script src="options.js"></script>
+	<script src="updates.js"></script>
+	<script src="updater.js"></script>
 </body>
 
 </html>
