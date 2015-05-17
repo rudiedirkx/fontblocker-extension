@@ -7,11 +7,12 @@ var blockId = chrome.contextMenus.create({
 			if ( !data || !data.name || !data.website ) return;
 
 			chrome.storage.local.get('fonts', function(items) {
-				if ( !items.fonts[data.name] ) {
+				var fonts = items.fonts || {};
+				if ( !fonts[data.name] ) {
 					data.added = Date.now();
-					items.fonts[data.name] = data;
+					fonts[data.name] = data;
 
-					chrome.storage.local.set(items, function() {
+					chrome.storage.local.set({fonts: fonts}, function() {
 						// Saved!
 					});
 				}
