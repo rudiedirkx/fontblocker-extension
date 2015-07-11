@@ -14,7 +14,7 @@ function init() {
 
 	chrome.storage.local.get('fonts', function(items) {
 		var list = items.fonts || [];
-		var $fonts = document.querySelector('#fonts');
+		$fonts = document.querySelector('#fonts');
 
 		// Show fonts
 		var aFontNameReplaced = false;
@@ -31,10 +31,10 @@ function init() {
 			date = date.getDate() + ' ' + date.toLocaleDateString(undefined, {month: 'long'}) + ' ' + date.getFullYear();
 
 			html += '<tr data-index="' + i + '">';
-			html += '<td class="font-name" data-sort="' + _html(font.name.toLowerCase()) + '">' + _html(font.name) + '</td>';
-			html += '<td class="font-host" data-sort="' + _html(font.host) + '">' + _html(font.host) + '</td>';
+			html += '<td class="font-name" data-value="' + _html(font.name.toLowerCase()) + '">' + _html(font.name) + '</td>';
+			html += '<td class="font-host" data-value="' + _html(font.host) + '">' + _html(font.host) + '</td>';
 			html += '<td class="font-delete"><a class="remove-font" href="#">x</a></td>';
-			html += '<td class="font-added" data-sort="' + font.added + '">' + date + '</td>';
+			html += '<td class="font-added" data-value="' + font.added + '">' + date + '</td>';
 			html += '</tr>';
 		}
 		$fonts.innerHTML = html;
@@ -56,6 +56,52 @@ function init() {
 						});
 					});
 				}
+			}
+		});
+
+		// Listen for sorting
+		document.addEventListener('click', function(e) {
+			if ( e.target.matches('th.sorter > a') ) {
+				e.preventDefault();
+				var sorter = e.target.parentNode;
+
+				// New sort
+				var column = sorter.dataset.sort;
+
+				// Current sorting state
+				var sorting = document.querySelector('th.sorting');
+				var isCurrentSort = sorting.matches('th.' + column);
+
+				var defaultOrder = sorter.dataset.order == 'desc' ? 'desc' : 'asc';
+				var asc = defaultOrder == 'asc' ? 1 : -1;
+				var currentOrder = sorter.dataset.currentOrder || defaultOrder;
+				if ( isCurrentSort && currentOrder == defaultOrder ) {
+					asc *= -1;
+				}
+
+				// Sort TRs
+				var trs = [].slice.call($fonts.rows);
+				trs.sort(function(a, b) {
+					var aValue = a.querySelector('td.' + column).dataset.value;
+					var bValue = b.querySelector('td.' + column).dataset.value;
+					return aValue > bValue ? asc : (bValue > aValue ? -asc : 0);
+				});
+
+				// Re-append TRs in new order
+				for (var i=0; i<trs.length; i++) {
+					var tr = trs[i];
+					$fonts.appendChild(tr);
+				}
+
+				// Change sort focus
+				if ( !isCurrentSort ) {
+					sorting.classList.remove('sorting');
+					delete sorting.dataset.currentOrder;
+
+					sorting = document.querySelector('th.' + column);
+					sorting.classList.add('sorting');
+				}
+				sorting.dataset.currentOrder = asc == 1 ? 'asc' : 'desc';
 			}
 		});
 

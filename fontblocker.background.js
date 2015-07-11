@@ -17,7 +17,7 @@ var blockId = chrome.contextMenus.create({
 				}
 
 				data.added = Date.now();
-				fonts.push(data);
+				fonts.unshift(data);
 				chrome.storage.local.set({fonts: fonts}, function() {
 					// Saved!
 				});

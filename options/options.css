@@ -18,6 +18,12 @@ table thead tr,
 table tbody tr:nth-child(even) {
 	background-color: #eee;
 }
+table thead th.sorting {
+	background-color: #ccc;
+}
+table thead a {
+	color: black;
+}
 table th,
 table td {
 	border: solid 1px #ccc;
