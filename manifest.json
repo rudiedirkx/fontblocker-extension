@@ -1,7 +1,7 @@
 {
 	"name": "Font blocker",
 	"description": "Blocks the fonts you want to block.",
-	"version": "1.3",
+	"version": "1.4",
 
 	"permissions": [ "storage", "contextMenus" ],
 
