@@ -9,18 +9,23 @@
 
 <body class="loading">
 	<h2>Blocked fonts</h2>
+	<p>
+		Fonts are blocked per name per website, so you might have to block <em id="a-font-name">Open Sans</em> many
+		times. This is to limit inline CSS size, because it adds a lot.
+	</p>
 	<table>
 		<thead>
 			<tr>
-				<th>Font name</th>
-				<th></th>
-				<th>Website</th>
-				<th>Date</th>
+				<th class="font-name">Font name</th>
+				<th class="font-host">Website</th>
+				<th class="font-delete"></th>
+				<th class="font-added">Blocked on</th>
 			</tr>
 		</thead>
 		<tbody id="fonts"></tbody>
 	</table>
 
+	<script src="../fontblocker.logic.js"></script>
 	<script src="options.js"></script>
 	<script src="updates.js"></script>
 	<script src="updater.js"></script>

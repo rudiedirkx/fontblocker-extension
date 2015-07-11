@@ -31,4 +31,49 @@ updates = [
 		});
 	},
 
+	/**
+	 * Convert from {"Font name": {...}} to [{"name": "Font name"}]
+	 */
+
+	function(next) {
+		chrome.storage.local.get('fonts', function(items) {
+			var fonts = items.fonts || {};
+			var list = [];
+			for ( var name in fonts ) {
+				var font = fonts[name];
+				if ( font.website ) {
+					var host = fb.host(font.website);
+					if ( host ) {
+						list.push({
+							name: name,
+							host: host,
+							added: font.added || 0,
+						});
+					}
+				}
+			}
+
+			chrome.storage.local.set({fonts: list}, function() {
+				next();
+			});
+		});
+	},
+
+	/**
+	 * Order by `Blocked on` DESC, which is default
+	 */
+
+	function(next) {
+		chrome.storage.local.get('fonts', function(items) {
+			var fonts = items.fonts || [];
+			fonts.sort(function(a, b) {
+				return (b.added || 0) - (a.added || 0);
+			});
+
+			chrome.storage.local.set({fonts: fonts}, function() {
+				next();
+			});
+		});
+	}
+
 ];

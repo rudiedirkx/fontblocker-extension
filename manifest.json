@@ -9,13 +9,13 @@
 	"content_scripts": [
 		{
 			"all_frames": true,
-			"js": [ "fontblocker.content.js" ],
+			"js": [ "fontblocker.logic.js", "fontblocker.content.js" ],
 			"matches": [ "http://*/*", "https://*/*" ],
 			"run_at": "document_end"
 		}
 	],
 	"background": {
-		"scripts": [ "fontblocker.background.js" ]
+		"scripts": [ "fontblocker.logic.js", "fontblocker.background.js" ]
 	},
 
 	"icons": {

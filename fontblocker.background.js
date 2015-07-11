@@ -4,18 +4,23 @@ var blockId = chrome.contextMenus.create({
 	"contexts": ['all'],
 	"onclick": function(info, tab) {
 		chrome.tabs.sendMessage(tab.id, {"getLastElementFont": true}, function(data) {
-			if ( !data || !data.name || !data.website ) return;
+			if ( !data || !data.name || !data.host ) return;
 
 			chrome.storage.local.get('fonts', function(items) {
-				var fonts = items.fonts || {};
-				if ( !fonts[data.name] ) {
-					data.added = Date.now();
-					fonts[data.name] = data;
-
-					chrome.storage.local.set({fonts: fonts}, function() {
-						// Saved!
-					});
+				var fonts = items.fonts || [];
+				for (var i=0; i<fonts.length; i++) {
+					var font = fonts[i];
+					if (font.host == data.host && font.name == data.name) {
+						// Already exists, cancel
+						return;
+					}
 				}
+
+				data.added = Date.now();
+				fonts.push(data);
+				chrome.storage.local.set({fonts: fonts}, function() {
+					// Saved!
+				});
 			});
 		});
 	}

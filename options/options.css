@@ -14,7 +14,8 @@ body.loading:before {
 table {
 	border-collapse: collapse;
 }
-table tr:nth-child(odd) {
+table thead tr,
+table tbody tr:nth-child(even) {
 	background-color: #eee;
 }
 table th,
@@ -24,4 +25,8 @@ table td {
 }
 table td.font-name {
 	font-family: monospace;
+}
+table th.font-added,
+table td.font-added {
+	text-align: right;
 }

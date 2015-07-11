@@ -3,16 +3,18 @@
  */
 
 function addFonts(fonts) {
-	var weights = ['normal', 'bold', /*'100', '200',*/ '300', '500', '600', '800', '900'];
+	if ( !fonts.length ) return;
+
+	var weights = ['normal', 'bold', '100', '200', '300', '500', '600', '800', '900'];
 	var styles = ['normal', 'italic'];
 
 	// Compile CSS
 	var css = [];
-	for ( var name in fonts ) {
-		var font = fonts[name];
+	for (var i=0; i<fonts.length; i++) {
+		var font = fonts[i];
 		weights.forEach(function(weight) {
 			styles.forEach(function(style) {
-				css.push('@font-face { font-family: "' + font.name + '"; font-weight: ' + weight + '; font-style: ' + style + '; src: local("Arial"); }');
+				css.push('@font-face { font-family: "' + font + '"; font-weight: ' + weight + '; font-style: ' + style + '; src: local("Arial"); }');
 			});
 		});
 	}
@@ -27,10 +29,8 @@ function addFonts(fonts) {
 }
 
 // Fetch configured fonts
-chrome.storage.local.get('fonts', function(items) {
-	var fonts = items.fonts || {};
-	if (!Object.keys(fonts).length) return;
-
+var host = fb.host(location.hostname);
+fb.fontNamesForHost(host, function(fonts) {
 	addFonts(fonts);
 });
 
@@ -56,14 +56,13 @@ chrome.extension.onMessage.addListener(function(message, sender, sendResponse) {
 			});
 
 			var font = fonts[0].replace(/^['"\s]+|['"\s]$/g, '');
-			if (confirm('Do you want to block\n\n' + font + '\n\n?')) {
-				var add = {};
-				add[font] = {name: font};
-				addFonts(add);
+			var host = fb.host(location.hostname);
+			if (confirm("Do you want to block\n\n" + font + "\n\non\n\n" + host + "\n\n?")) {
+				addFonts([font]);
 
 				var data = {
 					name: font,
-					website: location.hostname,
+					host: host,
 				};
 				sendResponse(data);
 			}
