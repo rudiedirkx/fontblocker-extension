@@ -129,11 +129,33 @@ chrome.extension.onMessage.addListener(function(message, sender, sendResponse) {
  * Unblock session-blocked fonts
  */
 
-// chrome.extension.onMessage.addListener(function(message, sender, sendResponse) {
-// 	if (message.unblockSessionStorage) {
-// 		delete sessionStorage.blockedFonts;
-// 	}
-// });
+chrome.extension.onMessage.addListener(function(message, sender, sendResponse) {
+	if (message.unblockSessionStorage) {
+		var unblock = JSON.parse(sessionStorage.blockedFonts || '[]');
+		if (unblock.length) {
+			// Remove from storage
+			delete sessionStorage.blockedFonts;
+
+			// Update html data cache
+			var htmlData = document.documentElement.dataset;
+			var blocked = htmlData.blockedFonts ? htmlData.blockedFonts.split('|') : [];
+			for (var i=0; i<unblock.length; i++) {
+				var name = unblock[i];
+				var index = blocked.indexOf(name);
+				if (index != -1) {
+					blocked.splice(index, 1);
+				}
+			}
+			document.documentElement.dataset.blockedFonts = blocked.join('|');
+
+			// Remove @font-face styles
+			var styles = document.querySelectorAll('style[data-origin="fontblocker"][data-type="session"]');
+			[].forEach.call(styles, function(style) {
+				style.remove();
+			});
+		}
+	}
+});
 
 
 

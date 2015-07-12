@@ -39,15 +39,15 @@ chrome.contextMenus.create({
 });
 
 // Context menu: CLEAR FOR SESSION
-// chrome.contextMenus.create({
-// 	"title": 'Unblock session-blocked fonts',
-// 	"contexts": ["page", "frame", "selection", "link", "editable"],
-// 	"onclick": function(info, tab) {
-// 		chrome.tabs.sendMessage(tab.id, {unblockSessionStorage: true}, function(data) {
-// 			// Content script takes care of everything
-// 		});
-// 	}
-// });
+chrome.contextMenus.create({
+	"title": 'Unblock session-blocked fonts',
+	"contexts": ["page", "frame", "selection", "link", "editable"],
+	"onclick": function(info, tab) {
+		chrome.tabs.sendMessage(tab.id, {unblockSessionStorage: true}, function(data) {
+			// Content script takes care of everything
+		});
+	}
+});
 
 // Context menu: UNBLOCK
 chrome.contextMenus.create({
