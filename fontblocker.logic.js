@@ -1,5 +1,13 @@
 fb = {
 
+	REPLACEMENT: 'Arial',
+
+	UNBLOCKABLE: [
+		'Arial', // REPLACEMENT
+		'monospace', 'serif', 'sans-serif', 'fantasy', 'cursive', // Generics
+		'initial', 'inherit', 'unset', // CSS keywords
+	],
+
 	host: function(host, m) {
 		if ( m = host.match(/\/\/([^/]+)\//) ) {
 			host = m[1];

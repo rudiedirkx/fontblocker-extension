@@ -1,9 +1,15 @@
+
 /**
  * Add CSS to override @font-face
  */
 
 function addFonts(fonts) {
 	if ( !fonts.length ) return;
+
+	var htmlData = document.documentElement.dataset;
+	var blocked = htmlData.blockedFonts ? htmlData.blockedFonts.split('|') : [];
+	blocked = blocked.concat(fonts);
+	document.documentElement.dataset.blockedFonts = blocked.join('|');
 
 	var weights = ['normal', 'bold', '100', '200', '300', '500', '600', '800', '900'];
 	var styles = ['normal', 'italic'];
@@ -14,7 +20,7 @@ function addFonts(fonts) {
 		var font = fonts[i];
 		weights.forEach(function(weight) {
 			styles.forEach(function(style) {
-				css.push('@font-face { font-family: "' + font + '"; font-weight: ' + weight + '; font-style: ' + style + '; src: local("Arial"); }');
+				css.push('@font-face { font-family: "' + font + '"; font-weight: ' + weight + '; font-style: ' + style + '; src: local("' + fb.REPLACEMENT + '"); }');
 			});
 		});
 	}
@@ -48,24 +54,39 @@ document.addEventListener('contextmenu', function(e) {
 });
 
 chrome.extension.onMessage.addListener(function(message, sender, sendResponse) {
-	if (lastElement) {
-		if (message.getLastElementFont) {
-			var fonts = getComputedStyle(lastElement).fontFamily.split(',');
-			fonts = fonts.filter(function(font) {
-				return font.trim() != '';
-			});
+	if (message.getLastElementFont && lastElement) {
+		// Currently blocked fonts
+		var htmlData = document.documentElement.dataset;
+		var blocked = htmlData.blockedFonts ? htmlData.blockedFonts.split('|') : [];
 
-			var font = fonts[0].replace(/^['"\s]+|['"\s]$/g, '');
-			var host = fb.host(location.hostname);
-			if (confirm("Do you want to block\n\n" + font + "\n\non\n\n" + host + "\n\n?")) {
-				addFonts([font]);
-
-				var data = {
-					name: font,
-					host: host,
-				};
-				sendResponse(data);
+		// Extract used font
+		var fontFamily = getComputedStyle(lastElement).fontFamily;
+		var rawFonts = fontFamily.split(',');
+		var font;
+		for (var i=0; i<rawFonts.length; i++) {
+			var checkFont = rawFonts[i];
+			checkFont = checkFont.trim().replace(/^['"\s]+|['"\s]$/g, '').trim();
+			if (checkFont && blocked.indexOf(checkFont) == -1 && fb.UNBLOCKABLE.indexOf(checkFont) == -1) {
+				font = checkFont;
 			}
+		}
+
+		// No blockable font found
+		if ( !font ) {
+			console.warn('No font found, or all fonts blocked: ' + fontFamily);
+			return;
+		}
+
+		// Block and persist
+		var host = fb.host(location.hostname);
+		if (confirm("Do you want to block\n\n" + font + "\n\non\n\n" + host + "\n\n?")) {
+			addFonts([font]);
+
+			var data = {
+				name: font,
+				host: host,
+			};
+			sendResponse(data);
 		}
 	}
 });
