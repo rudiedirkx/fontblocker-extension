@@ -1,7 +1,8 @@
 
+// Context menu: BLOCK
 var blockId = chrome.contextMenus.create({
 	"title": 'Block custom font',
-	"contexts": ['all'],
+	"contexts": ["page", "frame", "selection", "link", "editable"],
 	"onclick": function(info, tab) {
 		chrome.tabs.sendMessage(tab.id, {"getLastElementFont": true}, function(data) {
 			if ( !data || !data.name || !data.host ) return;
@@ -24,4 +25,30 @@ var blockId = chrome.contextMenus.create({
 			});
 		});
 	}
+});
+
+// Context menu: UNBLOCK
+var unblockId = chrome.contextMenus.create({
+	"title": '(Un)glimpse blocked fonts',
+	"contexts": ["page_action"],
+	"onclick": function(info, tab) {
+		chrome.tabs.sendMessage(tab.id, {glimpseFonts: true}, function(data) {
+			// Whatever
+		});
+	}
+});
+
+// Show page action
+chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
+	if ( msg && msg.fontsBlocked ) {
+		chrome.pageAction.show(sender.tab.id);
+	}
+});
+
+// Click on page action
+chrome.pageAction.onClicked.addListener(function(tab) {
+	var url = chrome.runtime.getURL('options/options.html');
+	chrome.tabs.create({
+		url: url + '#' + fb.host(tab.url),
+	});
 });

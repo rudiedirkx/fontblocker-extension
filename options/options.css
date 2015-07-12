@@ -21,6 +21,12 @@ table tbody tr:nth-child(even) {
 table thead th.sorting {
 	background-color: #ccc;
 }
+table tbody tr.hilited {
+	background-color: hsl(195, 53%, 85%);
+}
+table tbody tr.hilited:nth-child(even) {
+	background-color: hsl(195, 53%, 81%);
+}
 table thead a {
 	color: black;
 }

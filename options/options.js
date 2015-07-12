@@ -30,7 +30,7 @@ function init() {
 			var date = new Date(font.added);
 			date = date.getDate() + ' ' + date.toLocaleDateString(undefined, {month: 'long'}) + ' ' + date.getFullYear();
 
-			html += '<tr data-index="' + i + '">';
+			html += '<tr data-index="' + i + '" data-font-name="' + _html(font.name.toLowerCase()) + '" data-font-host="' + _html(font.host) + '">';
 			html += '<td class="font-name" data-value="' + _html(font.name.toLowerCase()) + '">' + _html(font.name) + '</td>';
 			html += '<td class="font-host" data-value="' + _html(font.host) + '">' + _html(font.host) + '</td>';
 			html += '<td class="font-delete"><a class="remove-font" href="#">x</a></td>';
@@ -38,6 +38,14 @@ function init() {
 			html += '</tr>';
 		}
 		$fonts.innerHTML = html;
+
+		// Hilite hosts
+		var hiliteHost = location.hash.substr(1);
+		if ( hiliteHost ) {
+			[].forEach.call($fonts.querySelectorAll('tr[data-font-host="' + _html(hiliteHost) + '"]'), function(tr) {
+				tr.classList.add('hilited');
+			});
+		}
 
 		// Listen for unblock click
 		$fonts.addEventListener('click', function(e) {

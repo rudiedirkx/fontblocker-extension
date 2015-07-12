@@ -32,6 +32,11 @@ function addFonts(fonts) {
 	if (document.head) {
 		document.head.appendChild(style);
 	}
+
+	// Show page action
+	chrome.runtime.sendMessage({fontsBlocked: true}, function(response) {
+		// Don't care if that worked
+	});
 }
 
 // Fetch configured fonts
@@ -88,5 +93,25 @@ chrome.extension.onMessage.addListener(function(message, sender, sendResponse) {
 			};
 			sendResponse(data);
 		}
+	}
+});
+
+
+
+/**
+ * (Un)glimpse blocked fonts, from page action
+ */
+
+chrome.extension.onMessage.addListener(function(message, sender, sendResponse) {
+	if (message.glimpseFonts) {
+		var styles = document.querySelectorAll('style[data-origin="fontblocker"]');
+		var enabled = null;
+		[].forEach.call(styles, function(style) {
+			if (enabled == null) {
+				enabled = !style.disabled;
+			}
+			style.disabled = enabled;
+		});
+		sendResponse({disabled: enabled});
 	}
 });
