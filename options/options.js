@@ -55,7 +55,7 @@ function init() {
 				var tr = e.target.parentNode.parentNode;
 				var index = Number(tr.dataset.index);
 				var font = list[index];
-				if ( confirm("Do you want to unblock\n\n" + font.name + "\n\non\n\n" + font.host + "\n\n?") ) {
+				if ( confirm("Do you want to unblock\n\n    " + font.name + "\n\non\n\n    " + font.host + "\n\n?") ) {
 					chrome.storage.local.get('fonts', function(items) {
 						var list = items.fonts;
 						list.splice(index, 1);

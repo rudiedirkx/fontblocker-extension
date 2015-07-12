@@ -1,10 +1,21 @@
 
-// Context menu: BLOCK
-var blockId = chrome.contextMenus.create({
-	"title": 'Block custom font',
+// Context menu: BLOCK FOR SESSION
+chrome.contextMenus.create({
+	"title": 'Block font - session',
 	"contexts": ["page", "frame", "selection", "link", "editable"],
 	"onclick": function(info, tab) {
-		chrome.tabs.sendMessage(tab.id, {"getLastElementFont": true}, function(data) {
+		chrome.tabs.sendMessage(tab.id, {getLastElementFont: true, sessionStorage: true}, function(data) {
+			// Content script takes care of everything
+		});
+	}
+});
+
+// Context menu: BLOCK ALWAYS
+chrome.contextMenus.create({
+	"title": 'Block font - forever',
+	"contexts": ["page", "frame", "selection", "link", "editable"],
+	"onclick": function(info, tab) {
+		chrome.tabs.sendMessage(tab.id, {getLastElementFont: true}, function(data) {
 			if ( !data || !data.name || !data.host ) return;
 
 			chrome.storage.local.get('fonts', function(items) {
@@ -27,8 +38,19 @@ var blockId = chrome.contextMenus.create({
 	}
 });
 
+// Context menu: CLEAR FOR SESSION
+// chrome.contextMenus.create({
+// 	"title": 'Unblock session-blocked fonts',
+// 	"contexts": ["page", "frame", "selection", "link", "editable"],
+// 	"onclick": function(info, tab) {
+// 		chrome.tabs.sendMessage(tab.id, {unblockSessionStorage: true}, function(data) {
+// 			// Content script takes care of everything
+// 		});
+// 	}
+// });
+
 // Context menu: UNBLOCK
-var unblockId = chrome.contextMenus.create({
+chrome.contextMenus.create({
 	"title": '(Un)glimpse blocked fonts',
 	"contexts": ["page_action"],
 	"onclick": function(info, tab) {
