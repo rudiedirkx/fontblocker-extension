@@ -42,3 +42,9 @@ table th.font-added,
 table td.font-added {
 	text-align: right;
 }
+
+textarea {
+	height: 6em;
+	width: 50%;
+	min-width: 600px;
+}

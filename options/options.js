@@ -47,6 +47,52 @@ function init() {
 			});
 		}
 
+		// Export
+		document.querySelector('#ta-export').value = JSON.stringify(list);
+
+		// Import
+		document.querySelector('#form-import').addEventListener('submit', function(e) {
+			e.preventDefault();
+
+			var list;
+			try {
+				list = JSON.parse(this.elements.json.value);
+			}
+			catch (ex) {
+				alert('Invalid JSON:\n\n' + ex.message);
+				return;
+			}
+
+			chrome.storage.local.get('fonts', function(items) {
+				var fonts = items.fonts || [];
+
+				// @todo Compare INPUT vs EXISTS and summarize with confirm()
+
+				someLabel:
+				for (var i=0; i<list.length; i++) {
+					var newFont = list[i];
+					if (!newFont.host || !newFont.name) {
+						alert('Invalid font:\n\n' + JSON.stringify(newFont, null, '  '));
+						return;
+					}
+
+					for (var j=0; j<fonts.length; j++) {
+						var oldFont = fonts[j];
+						if (fb.equals(oldFont, newFont)) {
+							continue someLabel;
+						}
+					}
+
+					newFont.added || (newFont.added = Date.now());
+					fonts.push(newFont);
+				}
+
+				chrome.storage.local.set({fonts: fonts}, function() {
+					location.reload();
+				});
+			});
+		});
+
 		// Listen for unblock click
 		$fonts.addEventListener('click', function(e) {
 			if ( e.target.matches('a.remove-font') ) {

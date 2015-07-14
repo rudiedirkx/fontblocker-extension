@@ -15,6 +15,10 @@ fb = {
 		return host.replace(/^www\./, '');
 	},
 
+	equals: function(a, b) {
+		return a.host == b.host && a.name == b.name;
+	},
+
 	fontNamesForHost: function(host, callback) {
 		chrome.storage.local.get('fonts', function(items) {
 			if (!items.fonts) return callback([]);
