@@ -56,9 +56,14 @@ fb.fontNamesForHost(host, function(fonts) {
 });
 
 // Fetch blocked fonts from sessionStorage
-var blocked = JSON.parse(sessionStorage.blockedFonts || '[]');
-if (blocked.length) {
-	addFonts(blocked, 'session');
+try {
+	var blocked = JSON.parse(sessionStorage.blockedFonts || '[]');
+	if (blocked.length) {
+		addFonts(blocked, 'session');
+	}
+}
+catch (ex) {
+	// This sometimes (?) fails in iframes (?) with a different origin (?), I have no idea why...
 }
 
 
