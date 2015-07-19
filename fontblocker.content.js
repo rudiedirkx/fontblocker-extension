@@ -55,9 +55,9 @@ fb.fontNamesForHost(host, function(fonts) {
 	addFonts(fonts, 'persistent');
 });
 
-// Fetch blocked fonts from sessionStorage
+// Fetch blocked fonts from localStorage
 try {
-	var blocked = JSON.parse(sessionStorage.blockedFonts || '[]');
+	var blocked = JSON.parse(localStorage.blockedFonts || '[]');
 	if (blocked.length) {
 		addFonts(blocked, 'session');
 	}
@@ -106,15 +106,15 @@ chrome.extension.onMessage.addListener(function(message, sender, sendResponse) {
 
 		// Block and persist
 		var host = fb.host(location.hostname);
-		var lifetime = message.sessionStorage ? 'for this session' : 'forever';
+		var lifetime = message.session ? 'for this session' : 'forever';
 		if (confirm("Do you want to block\n\n    " + font + "\n\non\n\n    " + host + "\n\n" + lifetime + "?")) {
-			addFonts([font], message.sessionStorage ? 'session' : 'persistent', true);
+			addFonts([font], message.session ? 'session' : 'persistent', true);
 
-			// Save in sessionStorage
-			if (message.sessionStorage) {
-				var blocked = JSON.parse(sessionStorage.blockedFonts || '[]');
+			// Save in localStorage
+			if (message.session) {
+				var blocked = JSON.parse(localStorage.blockedFonts || '[]');
 				blocked.push(font);
-				sessionStorage.blockedFonts = JSON.stringify(blocked);
+				localStorage.blockedFonts = JSON.stringify(blocked);
 			}
 			// Save in storage.local
 			else {
@@ -135,11 +135,11 @@ chrome.extension.onMessage.addListener(function(message, sender, sendResponse) {
  */
 
 chrome.extension.onMessage.addListener(function(message, sender, sendResponse) {
-	if (message.unblockSessionStorage) {
-		var unblock = JSON.parse(sessionStorage.blockedFonts || '[]');
+	if (message.unblockSession) {
+		var unblock = JSON.parse(localStorage.blockedFonts || '[]');
 		if (unblock.length) {
 			// Remove from storage
-			delete sessionStorage.blockedFonts;
+			delete localStorage.blockedFonts;
 
 			// Update html data cache
 			var htmlData = document.documentElement.dataset;

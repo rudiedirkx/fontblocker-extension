@@ -4,7 +4,7 @@ chrome.contextMenus.create({
 	"title": 'Block font - session',
 	"contexts": ["page", "frame", "selection", "link", "editable"],
 	"onclick": function(info, tab) {
-		chrome.tabs.sendMessage(tab.id, {getLastElementFont: true, sessionStorage: true}, function(data) {
+		chrome.tabs.sendMessage(tab.id, {getLastElementFont: true, session: true}, function(data) {
 			// Content script takes care of everything
 		});
 	}
@@ -43,7 +43,7 @@ chrome.contextMenus.create({
 	"title": 'Unblock session-blocked fonts',
 	"contexts": ["page", "frame", "selection", "link", "editable"],
 	"onclick": function(info, tab) {
-		chrome.tabs.sendMessage(tab.id, {unblockSessionStorage: true}, function(data) {
+		chrome.tabs.sendMessage(tab.id, {unblockSession: true}, function(data) {
 			// Content script takes care of everything
 		});
 	}
