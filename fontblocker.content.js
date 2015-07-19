@@ -56,15 +56,15 @@ fb.fontNamesForHost(host, function(fonts) {
 });
 
 // Fetch blocked fonts from localStorage
-try {
-	var blocked = JSON.parse(localStorage.blockedFonts || '[]');
-	if (blocked.length) {
-		addFonts(blocked, 'session');
-	}
-}
-catch (ex) {
-	// This sometimes (?) fails in iframes (?) with a different origin (?), I have no idea why...
-}
+// try {
+// 	var blocked = JSON.parse(localStorage.blockedFonts || '[]');
+// 	if (blocked.length) {
+// 		addFonts(blocked, 'session');
+// 	}
+// }
+// catch (ex) {
+// 	// This sometimes (?) fails in iframes (?) with a different origin (?), I have no idea why...
+// }
 
 
 
