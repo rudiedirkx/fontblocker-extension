@@ -26,7 +26,7 @@ fb = {
 			var fonts = [];
 			for (var i=0; i<items.fonts.length; i++) {
 				var font = items.fonts[i];
-				if (font.host == host) {
+				if (font.host == '*' || font.host == host) {
 					fonts.push(font.name);
 				}
 			}

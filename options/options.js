@@ -32,7 +32,11 @@ function init() {
 
 			html += '<tr data-index="' + i + '" data-font-name="' + _html(font.name.toLowerCase()) + '" data-font-host="' + _html(font.host) + '">';
 			html += '<td class="font-name" data-value="' + _html(font.name.toLowerCase()) + '">' + _html(font.name) + '</td>';
-			html += '<td class="font-host" data-value="' + _html(font.host) + '">' + _html(font.host) + '</td>';
+			html += '<td class="font-host" data-value="' + _html(font.host) + '">' + _html(font.host);
+			if ( font.host != '*' ) {
+				html += ' <a class="globalize-font" title="Globalize: block on all domains" href="#">↗</a>';
+			}
+			html += '</td>';
 			html += '<td class="font-delete"><a class="remove-font" href="#">x</a></td>';
 			html += '<td class="font-added" data-value="' + font.added + '">' + date + '</td>';
 			html += '</tr>';
@@ -42,7 +46,8 @@ function init() {
 		// Hilite hosts
 		var hiliteHost = location.hash.substr(1);
 		if ( hiliteHost ) {
-			[].forEach.call($fonts.querySelectorAll('tr[data-font-host="' + _html(hiliteHost) + '"]'), function(tr) {
+			var sel = 'tr[data-font-host="' + _html(hiliteHost) + '"], tr[data-font-host="*"]';
+			[].forEach.call($fonts.querySelectorAll(sel), function(tr) {
 				tr.classList.add('hilited');
 			});
 		}
@@ -93,7 +98,7 @@ function init() {
 			});
 		});
 
-		// Listen for unblock click
+		// Listen for clicks
 		$fonts.addEventListener('click', function(e) {
 			if ( e.target.matches('a.remove-font') ) {
 				e.preventDefault();
@@ -110,6 +115,20 @@ function init() {
 						});
 					});
 				}
+			}
+			else if ( e.target.matches('a.globalize-font') ) {
+				e.preventDefault();
+
+				var tr = e.target.parentNode.parentNode;
+				var index = Number(tr.dataset.index);
+				var font = JSON.parse(JSON.stringify(list[index]));
+				font.host = '*';
+				font.added = Date.now();
+				list.unshift(font);
+				chrome.storage.local.set({fonts: list}, function() {
+					location.hash = '*';
+					location.reload();
+				});
 			}
 		});
 

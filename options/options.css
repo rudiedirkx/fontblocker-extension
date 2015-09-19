@@ -43,6 +43,16 @@ table td.font-added {
 	text-align: right;
 }
 
+a.globalize-font {
+	text-decoration: none;
+	font-weight: bold;
+	color: black;
+
+	display: inline-block;
+	margin-left: 1em;
+	transform: scale(1.5);
+}
+
 textarea {
 	height: 6em;
 	width: 50%;
