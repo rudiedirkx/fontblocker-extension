@@ -18,7 +18,7 @@
 		"scripts": [ "fontblocker.logic.js", "fontblocker.background.js" ]
 	},
 	"page_action": {
-		"default_title": "Fonts blocked on this domain",
+		"default_title": "Fonts blocked on this page",
 		"default_icon": {
 			"19": "images/19x19.png",
 			"38": "images/38x38.png"

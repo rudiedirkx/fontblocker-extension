@@ -1,4 +1,28 @@
 
+function showPageAction() {
+	var htmlData = document.documentElement.dataset;
+	var blocked = htmlData.blockedFonts ? htmlData.blockedFonts.toLowerCase().split('|') : [];
+
+	// See if any fonts were actually blocked
+	var found = [].slice.call(document.querySelectorAll('body :first-of-type')).some(function(el) {
+		var family = getComputedStyle(el).fontFamily;
+		return family.split(',').some(function(family) {
+			family = family.replace(/(^[ '"]+|[ '"]+$)/, '').toLowerCase();
+			if ( blocked.indexOf(family) != -1 ) {
+				console.warn('First blocked font found:', family);
+				return true;
+			}
+		});
+	});
+
+	// Show page action?
+	chrome.runtime.sendMessage({fontsBlocked: found}, function(response) {
+		// Don't care if that worked
+	});
+}
+
+
+
 /**
  * Add CSS to override @font-face
  */
@@ -7,7 +31,7 @@ function addFonts(fonts, type, manual) {
 	if (!fonts.length) return;
 
 	var htmlData = document.documentElement.dataset;
-	var blocked = htmlData.blockedFonts ? htmlData.blockedFonts.split('|') : [];
+	var blocked = htmlData.blockedFonts ? htmlData.blockedFonts.toLowerCase().split('|') : [];
 	blocked = blocked.concat(fonts);
 	document.documentElement.dataset.blockedFonts = blocked.join('|');
 
@@ -43,17 +67,20 @@ function addFonts(fonts, type, manual) {
 		}, 1);
 	}
 
-	// Show page action
-	chrome.runtime.sendMessage({fontsBlocked: true}, function(response) {
-		// Don't care if that worked
-	});
+	// Show page action?
+	manual && showPageAction();
 }
 
 // Fetch blocked fonts from storage.local
 if ( document.documentElement && document.documentElement.nodeName == 'HTML' && location.protocol != 'chrome-extension:' ) {
 	var host = fb.host(location.hostname);
 	fb.fontNamesForHost(host, function(fonts) {
-		addFonts(fonts, 'persistent');
+		addFonts(fonts, 'persistent', false);
+	});
+
+	// Show page action?
+	document.readyState == 'complete' ? showPageAction() : window.addEventListener('load', function(e) {
+		setTimeout(showPageAction, 1);
 	});
 }
 
