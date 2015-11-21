@@ -1,15 +1,4 @@
 
-// Context menu: BLOCK FOR SESSION
-// chrome.contextMenus.create({
-// 	"title": 'Block font - session',
-// 	"contexts": ["page", "frame", "selection", "link", "editable"],
-// 	"onclick": function(info, tab) {
-// 		chrome.tabs.sendMessage(tab.id, {getLastElementFont: true, session: true}, function(data) {
-// 			// Content script takes care of everything
-// 		});
-// 	}
-// });
-
 // Context menu: BLOCK ALWAYS
 chrome.contextMenus.create({
 	"title": 'Block custom font',
@@ -37,17 +26,6 @@ chrome.contextMenus.create({
 		});
 	}
 });
-
-// Context menu: CLEAR FOR SESSION
-// chrome.contextMenus.create({
-// 	"title": 'Unblock session-blocked fonts',
-// 	"contexts": ["page", "frame", "selection", "link", "editable"],
-// 	"onclick": function(info, tab) {
-// 		chrome.tabs.sendMessage(tab.id, {unblockSession: true}, function(data) {
-// 			// Content script takes care of everything
-// 		});
-// 	}
-// });
 
 // Context menu: (UN)GLIMPSE ON PAGE
 chrome.contextMenus.create({

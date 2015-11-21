@@ -50,21 +50,12 @@ function addFonts(fonts, type, manual) {
 }
 
 // Fetch blocked fonts from storage.local
-var host = fb.host(location.hostname);
-fb.fontNamesForHost(host, function(fonts) {
-	addFonts(fonts, 'persistent');
-});
-
-// Fetch blocked fonts from localStorage
-// try {
-// 	var blocked = JSON.parse(localStorage.blockedFonts || '[]');
-// 	if (blocked.length) {
-// 		addFonts(blocked, 'session');
-// 	}
-// }
-// catch (ex) {
-// 	// This sometimes (?) fails in iframes (?) with a different origin (?), I have no idea why...
-// }
+if ( document.documentElement && document.documentElement.nodeName == 'HTML' && location.protocol != 'chrome-extension:' ) {
+	var host = fb.host(location.hostname);
+	fb.fontNamesForHost(host, function(fonts) {
+		addFonts(fonts, 'persistent');
+	});
+}
 
 
 
@@ -106,58 +97,15 @@ chrome.extension.onMessage.addListener(function(message, sender, sendResponse) {
 
 		// Block and persist
 		var host = fb.host(location.hostname);
-		var lifetime = message.session ? 'for this session' : 'forever';
-		if (confirm("Do you want to block\n\n    " + font + "\n\non\n\n    " + host + "\n\n" + lifetime + "?")) {
-			addFonts([font], message.session ? 'session' : 'persistent', true);
+		if (confirm("Do you want to block\n\n    " + font + "\n\non\n\n    " + host + "\n\n?")) {
+			addFonts([font], 'persistent', true);
 
-			// Save in localStorage
-			if (message.session) {
-				var blocked = JSON.parse(localStorage.blockedFonts || '[]');
-				blocked.push(font);
-				localStorage.blockedFonts = JSON.stringify(blocked);
-			}
 			// Save in storage.local
-			else {
-				var data = {
-					name: font,
-					host: host,
-				};
-				sendResponse(data);
-			}
-		}
-	}
-});
-
-
-
-/**
- * Unblock session-blocked fonts
- */
-
-chrome.extension.onMessage.addListener(function(message, sender, sendResponse) {
-	if (message.unblockSession) {
-		var unblock = JSON.parse(localStorage.blockedFonts || '[]');
-		if (unblock.length) {
-			// Remove from storage
-			delete localStorage.blockedFonts;
-
-			// Update html data cache
-			var htmlData = document.documentElement.dataset;
-			var blocked = htmlData.blockedFonts ? htmlData.blockedFonts.split('|') : [];
-			for (var i=0; i<unblock.length; i++) {
-				var name = unblock[i];
-				var index = blocked.indexOf(name);
-				if (index != -1) {
-					blocked.splice(index, 1);
-				}
-			}
-			document.documentElement.dataset.blockedFonts = blocked.join('|');
-
-			// Remove @font-face styles
-			var styles = document.querySelectorAll('style[data-origin="fontblocker"][data-type="session"]');
-			[].forEach.call(styles, function(style) {
-				style.remove();
-			});
+			var data = {
+				name: font,
+				host: host,
+			};
+			sendResponse(data);
 		}
 	}
 });
