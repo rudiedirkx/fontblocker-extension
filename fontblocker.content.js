@@ -51,11 +51,25 @@ function addFonts(fonts, type, manual) {
 
 	// Insert into DOM
 	var style = document.createElement('style');
+	style.className = 'fontblocker';
 	style.dataset.origin = 'fontblocker';
 	style.dataset.type = type;
 	style.dataset.count = fonts.length;
 	style.innerHTML = css.join("\n");
 	(document.head || document.documentElement).appendChild(style);
+
+	// Make sure it keeps being last
+	var move = function() {
+		if ( style.nextElementSibling && !style.nextElementSibling.classList.contains('fontblocker') ) {
+			(document.head || document.documentElement).appendChild(style);
+		}
+
+	};
+	var mover = function() {
+		move();
+		requestAnimationFrame(mover);
+	};
+	requestAnimationFrame(mover);
 
 	// Trigger font paint!?
 	if (manual) {
