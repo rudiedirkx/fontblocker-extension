@@ -30,9 +30,9 @@ function addFonts(fonts, type, manual) {
 	if (!fonts.length) return;
 
 	var htmlData = document.documentElement.dataset;
-	var blocked = htmlData.blockedFonts ? htmlData.blockedFonts.toLowerCase().split('|') : [];
+	var blocked = htmlData.blockedFonts ? htmlData.blockedFonts.split('|') : [];
 	blocked = blocked.concat(fonts);
-	document.documentElement.dataset.blockedFonts = blocked.join('|');
+	document.documentElement.dataset.blockedFonts = blocked.join('|').toLowerCase();
 
 	var weights = ['normal', 'bold', '100', '200', '300', '500', '600', '800', '900'];
 	var styles = ['normal', 'italic'];
@@ -121,10 +121,11 @@ chrome.extension.onMessage.addListener(function(message, sender, sendResponse) {
 		var rawFonts = fontFamily.split(',');
 		var font;
 		for (var i=0; i<rawFonts.length; i++) {
-			var checkFont = rawFonts[i];
-			checkFont = checkFont.trim().replace(/^['"\s]+|['"\s]$/g, '').trim();
-			if (checkFont && blocked.indexOf(checkFont) == -1 && fb.UNBLOCKABLE.indexOf(checkFont) == -1) {
-				font = checkFont;
+			var blockFont = rawFonts[i];
+			blockFont = blockFont.trim().replace(/^['"\s]+|['"\s]$/g, '').trim();
+			var checkFont = blockFont.toLowerCase();
+			if (blockFont && blocked.indexOf(checkFont) == -1 && fb.UNBLOCKABLE.indexOf(checkFont) == -1) {
+				font = blockFont;
 				break;
 			}
 		}
