@@ -5,11 +5,10 @@ function showPageAction() {
 
 	// See if any fonts were actually blocked
 	var found = [].slice.call(document.querySelectorAll('body :first-of-type')).some(function(el) {
-		var family = getComputedStyle(el).fontFamily;
-		return family.split(',').some(function(family) {
-			family = family.replace(/(^[ '"]+|[ '"]+$)/, '').toLowerCase();
+		var families = getComputedStyle(el).fontFamily;
+		return families.split(',').some(function(family) {
+			family = family.replace(/(^[ '"]+|[ '"]+$)/g, '').toLowerCase();
 			if ( blocked.indexOf(family) != -1 ) {
-				console.warn('First blocked font found:', family);
 				return true;
 			}
 		});
