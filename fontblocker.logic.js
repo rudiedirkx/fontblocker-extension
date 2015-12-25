@@ -20,7 +20,7 @@ fb = {
 	},
 
 	fontNamesForHost: function(host, callback) {
-		chrome.storage.local.get('fonts', function(items) {
+		chrome.storage.sync.get('fonts', function(items) {
 			if (!items.fonts) return callback([]);
 
 			var fonts = [];

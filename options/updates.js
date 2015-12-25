@@ -74,6 +74,24 @@ updates = [
 				next();
 			});
 		});
+	},
+
+	/**
+	 * Move to sync storage
+	 */
+
+	function(next) {
+		chrome.storage.local.get('fonts', function(items) {
+			var local = items.fonts || [];
+			chrome.storage.sync.get('fonts', function(items) {
+				var sync = items.fonts || [];
+				var save = sync.concat(local);
+				chrome.storage.sync.set({fonts: save}, function() {
+					chrome.storage.local.remove('fonts');
+					next();
+				});
+				});
+		});
 	}
 
 ];

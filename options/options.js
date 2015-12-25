@@ -12,7 +12,7 @@ function init() {
 		return text.replace(/</g, '&lt;');
 	}
 
-	chrome.storage.local.get('fonts', function(items) {
+	chrome.storage.sync.get('fonts', function(items) {
 		var list = items.fonts || [];
 		$fonts = document.querySelector('#fonts');
 
@@ -68,7 +68,7 @@ function init() {
 				return;
 			}
 
-			chrome.storage.local.get('fonts', function(items) {
+			chrome.storage.sync.get('fonts', function(items) {
 				var fonts = items.fonts || [];
 
 				// @todo Compare INPUT vs EXISTS and summarize with confirm()
@@ -92,7 +92,7 @@ function init() {
 					fonts.push(newFont);
 				}
 
-				chrome.storage.local.set({fonts: fonts}, function() {
+				chrome.storage.sync.set({fonts: fonts}, function() {
 					location.reload();
 				});
 			});
@@ -107,10 +107,10 @@ function init() {
 				var index = Number(tr.dataset.index);
 				var font = list[index];
 				if ( confirm("Do you want to unblock\n\n    " + font.name + "\n\non\n\n    " + font.host + "\n\n?") ) {
-					chrome.storage.local.get('fonts', function(items) {
+					chrome.storage.sync.get('fonts', function(items) {
 						var list = items.fonts;
 						list.splice(index, 1);
-						chrome.storage.local.set({fonts: list}, function() {
+						chrome.storage.sync.set({fonts: list}, function() {
 							location.reload();
 						});
 					});
@@ -125,7 +125,7 @@ function init() {
 				font.host = '*';
 				font.added = Date.now();
 				list.unshift(font);
-				chrome.storage.local.set({fonts: list}, function() {
+				chrome.storage.sync.set({fonts: list}, function() {
 					location.hash = '*';
 					location.reload();
 				});

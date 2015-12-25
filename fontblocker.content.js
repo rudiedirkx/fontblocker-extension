@@ -84,7 +84,7 @@ function addFonts(fonts, type, manual) {
 	manual && showPageAction();
 }
 
-// Fetch blocked fonts from storage.local
+// Fetch blocked fonts from storage.sync
 if ( document.documentElement && document.documentElement.nodeName == 'HTML' && location.protocol != 'chrome-extension:' ) {
 	var host = fb.host(location.hostname);
 	fb.fontNamesForHost(host, function(fonts) {
@@ -141,7 +141,7 @@ chrome.extension.onMessage.addListener(function(message, sender, sendResponse) {
 		if (confirm("Do you want to block\n\n    " + font + "\n\non\n\n    " + host + "\n\n?")) {
 			addFonts([font], 'persistent', true);
 
-			// Save in storage.local
+			// Save in storage.sync
 			var data = {
 				name: font,
 				host: host,

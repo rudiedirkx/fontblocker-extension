@@ -7,7 +7,7 @@ chrome.contextMenus.create({
 		chrome.tabs.sendMessage(tab.id, {getLastElementFont: true}, function(data) {
 			if ( !data || !data.name || !data.host ) return;
 
-			chrome.storage.local.get('fonts', function(items) {
+			chrome.storage.sync.get('fonts', function(items) {
 				var fonts = items.fonts || [];
 				for (var i=0; i<fonts.length; i++) {
 					var font = fonts[i];
@@ -19,7 +19,7 @@ chrome.contextMenus.create({
 
 				data.added = Date.now();
 				fonts.unshift(data);
-				chrome.storage.local.set({fonts: fonts}, function() {
+				chrome.storage.sync.set({fonts: fonts}, function() {
 					// Saved!
 				});
 			});
