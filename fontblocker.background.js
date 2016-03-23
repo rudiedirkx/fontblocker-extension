@@ -1,3 +1,10 @@
+function setPageActionIcon(tabId, disabled) {
+	var icon = disabled ? '128x128-disabled' : '128x128';
+	chrome.pageAction.setIcon({
+		tabId: tabId,
+		path: chrome.runtime.getURL('images/' + icon + '.png'),
+	});
+}
 
 // Context menu: BLOCK ALWAYS
 chrome.contextMenus.create({
@@ -27,28 +34,17 @@ chrome.contextMenus.create({
 	}
 });
 
-// Context menu: (UN)GLIMPSE ON PAGE
-chrome.contextMenus.create({
-	"title": '(Un)glimpse blocked fonts',
-	"contexts": ["page_action"],
-	"onclick": function(info, tab) {
-		chrome.tabs.sendMessage(tab.id, {glimpseFonts: true}, function(data) {
-			// Whatever
-		});
-	}
-});
-
 // Show page action
 chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
 	if ( msg && msg.fontsBlocked ) {
+		setPageActionIcon(sender.tab.id);
 		chrome.pageAction.show(sender.tab.id);
 	}
 });
 
 // Click on page action
 chrome.pageAction.onClicked.addListener(function(tab) {
-	var url = chrome.runtime.getURL('options/options.html');
-	chrome.tabs.create({
-		url: url + '#' + fb.host(tab.url),
+	chrome.tabs.sendMessage(tab.id, {glimpseFonts: true}, function(data) {
+		setPageActionIcon(tab.id, data.disabled);
 	});
 });

@@ -90,7 +90,7 @@ updates = [
 					chrome.storage.local.remove('fonts');
 					next();
 				});
-				});
+			});
 		});
 	}
 
