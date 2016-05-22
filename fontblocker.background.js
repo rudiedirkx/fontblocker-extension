@@ -12,27 +12,39 @@ chrome.contextMenus.create({
 	"contexts": ["page", "frame", "selection", "link", "editable"],
 	"onclick": function(info, tab) {
 		chrome.tabs.sendMessage(tab.id, {getLastElementFont: true}, function(data) {
-			if ( !data || !data.name || !data.host ) return;
-
-			chrome.storage.sync.get('fonts', function(items) {
-				var fonts = items.fonts || [];
-				for (var i=0; i<fonts.length; i++) {
-					var font = fonts[i];
-					if (font.host == data.host && font.name == data.name) {
-						// Already exists, cancel
-						return;
-					}
-				}
-
-				data.added = Date.now();
-				fonts.unshift(data);
-				chrome.storage.sync.set({fonts: fonts}, function() {
-					// Saved!
-				});
-			});
+			// Not as response, bc async, so instead as new message
+			// blockFont(data);
 		});
 	}
 });
+
+chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
+	if ( msg && msg.blockFont ) {
+		blockFont(msg.blockFont);
+	}
+});
+
+function blockFont(data) {
+	if ( !data || !data.name || !data.host ) return;
+	console.debug('Saving font', data);
+
+	chrome.storage.sync.get('fonts', function(items) {
+		var fonts = items.fonts || [];
+		for (var i=0; i<fonts.length; i++) {
+			var font = fonts[i];
+			if (font.host == data.host && font.name == data.name) {
+				// Already exists, cancel
+				return;
+			}
+		}
+
+		data.added = Date.now();
+		fonts.unshift(data);
+		chrome.storage.sync.set({fonts: fonts}, function() {
+			// Saved!
+		});
+	});
+}
 
 // Show page action
 chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {

@@ -28,11 +28,14 @@ function showPageAction() {
 
 function addFonts(fonts, type, manual) {
 	if (!fonts.length) return;
+	console.debug('Adding fonts', type, fonts);
 
-	var htmlData = document.documentElement.dataset;
-	var blocked = htmlData.blockedFonts ? htmlData.blockedFonts.split('|') : [];
-	blocked = blocked.concat(fonts);
-	document.documentElement.dataset.blockedFonts = blocked.join('|').toLowerCase();
+	if (type != 'preview') {
+		var htmlData = document.documentElement.dataset;
+		var blocked = htmlData.blockedFonts ? htmlData.blockedFonts.split('|') : [];
+		blocked = blocked.concat(fonts);
+		document.documentElement.dataset.blockedFonts = blocked.join('|').toLowerCase();
+	}
 
 	var weights = ['normal', 'bold', '100', '200', '300', '500', '600', '800', '900'];
 	var styles = ['normal', 'italic'];
@@ -136,20 +139,39 @@ chrome.extension.onMessage.addListener(function(message, sender, sendResponse) {
 			return;
 		}
 
+		// Preview before confirming
+		addFonts([font], 'preview', false);
+
 		// Block and persist
 		var host = fb.host(location.hostname);
-		if (confirm("Do you want to block\n\n    " + font + "\n\non\n\n    " + host + "\n\n?")) {
-			addFonts([font], 'persistent', true);
+		setTimeout(function() {
+			if (confirm("Do you want to block\n\n    " + font + "\n\non\n\n    " + host + "\n\n?")) {
+				removeFonts('preview');
+				addFonts([font], 'persistent', true);
 
-			// Save in storage.sync
-			var data = {
-				name: font,
-				host: host,
-			};
-			sendResponse(data);
-		}
+				// Save in storage.sync
+				var data = {
+					name: font,
+					host: host,
+				};
+				console.debug('Saving font', data);
+				// sendResponse(data);
+				chrome.runtime.sendMessage({blockFont: data}, function(response) {
+					// Don't care if that worked
+				});
+			}
+			else {
+				removeFonts('preview');
+			}
+		}, 100);
 	}
 });
+
+function removeFonts(type) {
+	console.debug('Removing fonts', type);
+	var style = document.querySelector('style[data-origin="fontblocker"][data-type="' + type + '"]');
+	style && style.remove();
+}
 
 
 
