@@ -28,7 +28,7 @@ function showPageAction() {
 
 function addFonts(fonts, type, manual) {
 	if (!fonts.length) return;
-	console.debug('Adding fonts', type, fonts);
+	// console.debug('Adding fonts', type, fonts);
 
 	if (type != 'preview') {
 		var htmlData = document.documentElement.dataset;
