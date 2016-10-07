@@ -28,7 +28,7 @@ function blockFont(data) {
 	if ( !data || !data.name || !data.host ) return;
 	console.debug('Saving font', data);
 
-	chrome.storage.sync.get('fonts', function(items) {
+	fb.storage.get('fonts', function(items) {
 		var fonts = items.fonts || [];
 		for (var i=0; i<fonts.length; i++) {
 			var font = fonts[i];
@@ -40,7 +40,7 @@ function blockFont(data) {
 
 		data.added = Date.now();
 		fonts.unshift(data);
-		chrome.storage.sync.set({fonts: fonts}, function() {
+		fb.storage.set({fonts: fonts}, function() {
 			// Saved!
 		});
 	});

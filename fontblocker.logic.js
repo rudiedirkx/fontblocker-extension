@@ -8,6 +8,8 @@ fb = {
 		'initial', 'inherit', 'unset', // CSS keywords
 	],
 
+	storage: chrome.storage.sync || chrome.storage.local,
+
 	host: function(host, m) {
 		if (m = host.match(/\/\/([^/]+)\//)) {
 			host = m[1];
@@ -20,7 +22,7 @@ fb = {
 	},
 
 	fontNamesForHost: function(host, callback) {
-		chrome.storage.sync.get('fonts', function(items) {
+		fb.storage.get('fonts', function(items) {
 			if (!items.fonts) return callback([]);
 
 			var fonts = [];
