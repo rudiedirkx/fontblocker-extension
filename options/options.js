@@ -1,4 +1,6 @@
 
+"use strict";
+
 console.time('Options init');
 
 function ready() {
@@ -12,9 +14,8 @@ function init() {
 		return text.replace(/</g, '&lt;');
 	}
 
-	chrome.storage.sync.get('fonts', function(items) {
-		var list = items.fonts || [];
-		$fonts = document.querySelector('#fonts');
+	fb.get(function(list) {
+		var $fonts = document.querySelector('#fonts');
 
 		// Show fonts
 		var aFontNameReplaced = false;
@@ -68,12 +69,10 @@ function init() {
 				return;
 			}
 
-			chrome.storage.sync.get('fonts', function(items) {
-				var fonts = items.fonts || [];
-
+			fb.get(function(fonts) {
 				// @todo Compare INPUT vs EXISTS and summarize with confirm()
 
-				someLabel:
+				var newFonts = [];
 				for (var i=0; i<list.length; i++) {
 					var newFont = list[i];
 					if (!newFont.host || !newFont.name) {
@@ -81,18 +80,28 @@ function init() {
 						return;
 					}
 
-					for (var j=0; j<fonts.length; j++) {
-						var oldFont = fonts[j];
-						if (fb.equals(oldFont, newFont)) {
-							continue someLabel;
-						}
+					if (!fb.existsIn(newFont, fonts)) {
+						fonts.push(newFont);
+						newFonts.push(newFont);
 					}
-
-					newFont.added || (newFont.added = Date.now());
-					fonts.push(newFont);
 				}
 
-				chrome.storage.sync.set({fonts: fonts}, function() {
+				if (newFonts.length == 0) {
+					return;
+				}
+
+				var addNextFont = function(callback) {
+					var font = newFonts.pop();
+					if (font) {
+						fb.add(font, function() {
+							addNextFont(callback);
+						});
+					}
+					else {
+						callback();
+					}
+				};
+				addNextFont(function() {
 					location.reload();
 				});
 			});
@@ -107,12 +116,8 @@ function init() {
 				var index = Number(tr.dataset.index);
 				var font = list[index];
 				if ( confirm("Do you want to unblock\n\n    " + font.name + "\n\non\n\n    " + font.host + "\n\n?") ) {
-					chrome.storage.sync.get('fonts', function(items) {
-						var list = items.fonts;
-						list.splice(index, 1);
-						chrome.storage.sync.set({fonts: list}, function() {
-							location.reload();
-						});
+					fb.remove(font, function() {
+						location.reload();
 					});
 				}
 			}
@@ -121,12 +126,12 @@ function init() {
 
 				var tr = e.target.parentNode.parentNode;
 				var index = Number(tr.dataset.index);
+
 				var font = JSON.parse(JSON.stringify(list[index]));
 				font.host = '*';
-				font.added = Date.now();
-				list.unshift(font);
-				chrome.storage.sync.set({fonts: list}, function() {
-					location.hash = '*';
+				delete font.added;
+
+				fb.add(font, function() {
 					location.reload();
 				});
 			}

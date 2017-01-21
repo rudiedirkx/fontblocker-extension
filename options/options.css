@@ -1,6 +1,9 @@
 body {
 	font-family: sans-serif;
 }
+body.loading {
+	height: 9999px;
+}
 body.loading:before {
 	content: "LOADING";
 	display: block;

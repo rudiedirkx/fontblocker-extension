@@ -28,21 +28,10 @@ function blockFont(data) {
 	if ( !data || !data.name || !data.host ) return;
 	console.debug('Saving font', data);
 
-	fb.storage.get('fonts', function(items) {
-		var fonts = items.fonts || [];
-		for (var i=0; i<fonts.length; i++) {
-			var font = fonts[i];
-			if (font.host == data.host && font.name == data.name) {
-				// Already exists, cancel
-				return;
-			}
+	fb.exists(data, function(exists) {
+		if (!exists) {
+			fb.add(data);
 		}
-
-		data.added = Date.now();
-		fonts.unshift(data);
-		fb.storage.set({fonts: fonts}, function() {
-			// Saved!
-		});
 	});
 }
 

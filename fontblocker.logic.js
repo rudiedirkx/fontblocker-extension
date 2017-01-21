@@ -8,7 +8,61 @@ fb = {
 		'initial', 'inherit', 'unset', // CSS keywords
 	],
 
+	FONTS_PER_ITEM: 100,
+
 	storage: chrome.storage.sync || chrome.storage.local,
+
+	existsIn: function(font, list) {
+		for (var i=0; i<list.length; i++) {
+			if (fb.equals(font, list[i])) {
+				return true;
+			}
+		}
+
+		return false;
+	},
+
+	exists: function(font, callback) {
+		fb.get(function(list) {
+			callback(fb.existsIn(font, list));
+		});
+	},
+
+	get: function(callback) {
+		fb.storage.get('fonts', function(items) {
+			var list = items.fonts || [];
+			list.sort(function(a, b) {
+				return b.added - a.added;
+			});
+			callback(list);
+		});
+	},
+
+	add: function(font, callback) {
+		font.added || (font.added = Date.now());
+
+		fb.get(function(fonts) {
+			fonts.unshift(font);
+			fb.storage.set({fonts: fonts}, function() {
+				callback && callback();
+			});
+		});
+	},
+
+	remove: function(font, callback) {
+		fb.get(function(list) {
+			var keep = [];
+			for (var i = 0; i < list.length; i++) {
+				if (!fb.equals(font, list[i])) {
+					keep.push(list[i]);
+				}
+			}
+
+			fb.storage.set({fonts: keep}, function() {
+				callback && callback();
+			});
+		});
+	},
 
 	host: function(host, m) {
 		if (m = host.match(/\/\/([^/]+)\//)) {
@@ -22,12 +76,10 @@ fb = {
 	},
 
 	fontNamesForHost: function(host, callback) {
-		fb.storage.get('fonts', function(items) {
-			if (!items.fonts) return callback([]);
-
+		fb.get(function(list) {
 			var fonts = [];
-			for (var i=0; i<items.fonts.length; i++) {
-				var font = items.fonts[i];
+			for (var i=0; i<list.length; i++) {
+				var font = list[i];
 				if (font.host == '*' || font.host == host) {
 					fonts.push(font.name);
 				}
