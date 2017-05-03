@@ -24,6 +24,12 @@
 		}
 	},
 
+	"applications": {
+		"gecko": {
+			"id": "fontblocker@hotblocks.nl"
+		}
+	},
+
 	"icons": {
 		"128": "images/128x128.png"
 	},

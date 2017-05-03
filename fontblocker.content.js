@@ -113,7 +113,7 @@ document.addEventListener('contextmenu', function(e) {
 	lastContext.y = e.y;
 });
 
-chrome.extension.onMessage.addListener(function(message, sender, sendResponse) {
+chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 	if (message.getLastElementFont && lastElement) {
 		// Currently blocked fonts
 		var htmlData = document.documentElement.dataset;
@@ -179,7 +179,7 @@ function removeFonts(type) {
  * (Un)glimpse blocked fonts, from page action
  */
 
-chrome.extension.onMessage.addListener(function(message, sender, sendResponse) {
+chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 	if (message.glimpseFonts) {
 		var styles = document.querySelectorAll('style[data-origin="fontblocker"]');
 		var enabled = null;
