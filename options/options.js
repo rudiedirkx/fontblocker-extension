@@ -5,6 +5,7 @@ console.time('Options init');
 
 function ready() {
 	document.body.classList.remove('loading');
+	document.body.style.height = '';
 	console.timeEnd('Options init');
 }
 
