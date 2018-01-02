@@ -26,9 +26,8 @@ function showPageAction() {
  * Add CSS to override @font-face
  */
 
-function addFonts(fonts, type, manual) {
+function addFonts(fonts, replacements, type, manual) {
 	if (!fonts.length) return;
-	// console.debug('Adding fonts', type, fonts);
 
 	if (type != 'preview') {
 		var htmlData = document.documentElement.dataset;
@@ -44,6 +43,7 @@ function addFonts(fonts, type, manual) {
 	var css = [];
 	for (var i=0; i<fonts.length; i++) {
 		var font = fonts[i];
+		var replacementFont = replacements[i];
 		groupedWeights.forEach(function(weights, bold) {
 			weights.forEach(function(weight) {
 				groupedStyles.forEach(function(styles, italic) {
@@ -51,7 +51,7 @@ function addFonts(fonts, type, manual) {
 						var weightStyle = [];
 						bold && weightStyle.push('Bolder');
 						italic && weightStyle.push('Italic');
-						var replacement = fb.REPLACEMENT + (weightStyle.length ? ' ' + weightStyle.join(' ') : '');
+						var replacement = (replacementFont || fb.REPLACEMENT) + (weightStyle.length ? ' ' + weightStyle.join(' ') : '');
 						css.push('@font-face { font-family: "' + font + '"; font-weight: ' + weight + '; font-style: ' + style + '; src: local("' + replacement + '"); }');
 					});
 				});
@@ -98,8 +98,8 @@ function addFonts(fonts, type, manual) {
 // Fetch blocked fonts from storage.sync
 if ( document.documentElement && document.documentElement.nodeName == 'HTML' && location.protocol != 'chrome-extension:' ) {
 	var host = fb.host(location.hostname);
-	fb.fontNamesForHost(host, function(fonts) {
-		addFonts(fonts, 'persistent', false);
+	fb.fontNamesForHost(host, function(fonts, replacements) {
+		addFonts(fonts, replacements, 'persistent', false);
 	});
 
 	// Show page action?
@@ -148,14 +148,14 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 		}
 
 		// Preview before confirming
-		addFonts([font], 'preview', false);
+		addFonts([font], [], 'preview', false);
 
 		// Block and persist
 		var host = fb.host(location.hostname);
 		setTimeout(function() {
 			if (confirm("Do you want to block\n\n    " + font + "\n\non\n\n    " + host + "\n\n?")) {
 				removeFonts('preview');
-				addFonts([font], 'persistent', true);
+				addFonts([font], [], 'persistent', true);
 
 				// Save in storage.sync
 				var data = {

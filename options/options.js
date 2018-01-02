@@ -15,6 +15,10 @@ function init() {
 		return text.replace(/</g, '&lt;');
 	}
 
+	var replacementDropdown = selected => `<select name="replacement">
+		${fb.REPLACEMENTS.map(font => `<option style="font-family: ${font}"${selected===font?' selected':''}>${font}</option>`)}
+		</select>`;
+
 	fb.get(function(list) {
 		var $fonts = document.querySelector('#fonts');
 
@@ -34,6 +38,7 @@ function init() {
 
 			html += '<tr data-index="' + i + '" data-font-name="' + _html(font.name.toLowerCase()) + '" data-font-host="' + _html(font.host) + '">';
 			html += '<td class="font-name" data-value="' + _html(font.name.toLowerCase()) + '">' + _html(font.name) + '</td>';
+			html += '<td class="font-replacement">' + replacementDropdown(font.replacement) + '</td>';
 			html += '<td class="font-host" data-value="' + _html(font.host) + '">' + _html(font.host);
 			if ( font.host != '*' ) {
 				html += ' <a class="globalize-font" title="Globalize: block on all domains" href="#">↗</a>';
@@ -108,12 +113,28 @@ function init() {
 			});
 		});
 
+		// Listen for changes
+		$fonts.addEventListener('change', function(e) {
+			if ( e.target.matches('select[name="replacement"]') ) {
+				var tr = e.target.closest('tr');
+				var index = Number(tr.dataset.index);
+				var font = list[index];
+
+				fb.exists(font, (liveFont, list) => {
+					liveFont.replacement = e.target.value;
+					fb.storage.set({fonts: list}, function() {
+						document.location.reload();
+					});
+				});
+			}
+		}, true);
+
 		// Listen for clicks
 		$fonts.addEventListener('click', function(e) {
 			if ( e.target.matches('a.remove-font') ) {
 				e.preventDefault();
 
-				var tr = e.target.parentNode.parentNode;
+				var tr = e.target.closest('tr');
 				var index = Number(tr.dataset.index);
 				var font = list[index];
 				if ( confirm("Do you want to unblock\n\n    " + font.name + "\n\non\n\n    " + font.host + "\n\n?") ) {
@@ -125,7 +146,7 @@ function init() {
 			else if ( e.target.matches('a.globalize-font') ) {
 				e.preventDefault();
 
-				var tr = e.target.parentNode.parentNode;
+				var tr = e.target.closest('tr');
 				var index = Number(tr.dataset.index);
 
 				var font = JSON.parse(JSON.stringify(list[index]));
@@ -142,7 +163,7 @@ function init() {
 		document.addEventListener('click', function(e) {
 			if ( e.target.matches('th.sorter > a') ) {
 				e.preventDefault();
-				var sorter = e.target.parentNode;
+				var sorter = e.target.closest('th');
 
 				// New sort
 				var column = sorter.dataset.sort;

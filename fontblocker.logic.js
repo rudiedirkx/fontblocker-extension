@@ -1,6 +1,7 @@
 fb = {
 
 	REPLACEMENT: 'Arial',
+	REPLACEMENTS: ['Arial', 'Verdana', 'Courier New', 'Consolas', 'Times New Roman', 'Georgia'],
 
 	UNBLOCKABLE: [
 		'Arial', // REPLACEMENT
@@ -15,7 +16,7 @@ fb = {
 	existsIn: function(font, list) {
 		for (var i=0; i<list.length; i++) {
 			if (fb.equals(font, list[i])) {
-				return true;
+				return list[i];
 			}
 		}
 
@@ -24,7 +25,7 @@ fb = {
 
 	exists: function(font, callback) {
 		fb.get(function(list) {
-			callback(fb.existsIn(font, list));
+			callback(fb.existsIn(font, list), list);
 		});
 	},
 
@@ -78,13 +79,15 @@ fb = {
 	fontNamesForHost: function(host, callback) {
 		fb.get(function(list) {
 			var fonts = [];
+			var replacements = [];
 			for (var i=0; i<list.length; i++) {
 				var font = list[i];
 				if (font.host == '*' || font.host == host) {
 					fonts.push(font.name);
+					replacements.push(font.replacement);
 				}
 			}
-			callback(fonts);
+			callback(fonts, replacements);
 		});
 	}
 
