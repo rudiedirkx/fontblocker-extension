@@ -5,7 +5,10 @@
 
 	"permissions": [ "storage", "contextMenus" ],
 
-	"options_page": "options/options.html",
+	"options_ui": {
+		"page": "options/options.html",
+		"open_in_tab": true
+	},
 	"content_scripts": [
 		{
 			"all_frames": true,
