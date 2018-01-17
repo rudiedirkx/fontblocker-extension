@@ -49,7 +49,7 @@ function addFonts(fonts, replacements, type, manual) {
 				groupedStyles.forEach(function(styles, italic) {
 					styles.forEach(function(style) {
 						var weightStyle = [];
-						bold && weightStyle.push('Bolder');
+						bold && weightStyle.push('Bold');
 						italic && weightStyle.push('Italic');
 						var replacement = (replacementFont || fb.REPLACEMENT) + (weightStyle.length ? ' ' + weightStyle.join(' ') : '');
 						css.push('@font-face { font-family: "' + font + '"; font-weight: ' + weight + '; font-style: ' + style + '; src: local("' + replacement + '"); }');
