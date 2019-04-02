@@ -15,9 +15,7 @@ function showPageAction() {
 	});
 
 	// Show page action?
-	chrome.runtime.sendMessage({fontsBlocked: found}, function(response) {
-		// Don't care if that worked
-	});
+	chrome.runtime.sendMessage({fontsBlocked: found});
 }
 
 
