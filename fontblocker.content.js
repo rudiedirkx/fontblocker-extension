@@ -34,27 +34,13 @@ function addFonts(fonts, replacements, type, manual) {
 		document.documentElement.dataset.blockedFonts = blocked.join('|').toLowerCase();
 	}
 
-	var groupedWeights = [['normal', '100', '200', '300',], ['bold', 'bolder', '500', '600', '800', '900']];
-	var groupedStyles = [['normal'], ['italic']];
-
 	// Compile CSS
 	var css = [];
 	for (var i=0; i<fonts.length; i++) {
 		var font = fonts[i];
-		var replacementFont = replacements[i];
-		groupedWeights.forEach(function(weights, bold) {
-			weights.forEach(function(weight) {
-				groupedStyles.forEach(function(styles, italic) {
-					styles.forEach(function(style) {
-						var weightStyle = [];
-						bold && weightStyle.push('Bold');
-						italic && weightStyle.push('Italic');
-						var replacement = (replacementFont || fb.REPLACEMENT) + (weightStyle.length ? ' ' + weightStyle.join(' ') : '');
-						css.push('@font-face { font-family: "' + font + '"; font-weight: ' + weight + '; font-style: ' + style + '; src: local("' + replacement + '"); }');
-					});
-				});
-			});
-		});
+		var replacementFont = replacements[i] || fb.REPLACEMENT;
+
+		css.push('@font-face { font-family: "' + font + '"; src: local("' + replacementFont + '"); }');
 	}
 
 	// Insert into DOM
