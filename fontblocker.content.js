@@ -127,6 +127,7 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 
 		// No blockable font found
 		if (!font) {
+			sendResponse({});
 			console.warn('No font detected, or all blockable fonts blocked: ' + fontFamily);
 			return;
 		}
@@ -136,6 +137,7 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 
 		// Block and persist
 		var host = fb.host(location.hostname);
+		sendResponse({});
 		setTimeout(function() {
 			if (confirm("Do you want to block\n\n    " + font + "\n\non\n\n    " + host + "\n\n?")) {
 				removeFonts('preview');
@@ -147,7 +149,6 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 					host: host,
 				};
 				console.debug('Saving font', data);
-				// sendResponse(data);
 				chrome.runtime.sendMessage({blockFont: data}, function(response) {
 					// Don't care if that worked
 				});
@@ -156,7 +157,11 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 				removeFonts('preview');
 			}
 		}, 100);
+		return;
 	}
+
+	console.log('unknown message', message);
+	sendResponse({});
 });
 
 function removeFonts(type) {

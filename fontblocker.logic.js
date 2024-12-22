@@ -1,4 +1,4 @@
-fb = {
+const fb = {
 
 	REPLACEMENT: 'Arial',
 	REPLACEMENTS: ['Arial', 'Verdana', 'Courier New', 'Consolas', 'Times New Roman', 'Georgia'],
