@@ -1,0 +1,9 @@
+diff --git a/manifest.json b/manifest.json
+index 3327b86..e70a855 100644
+--- a/manifest.json
++++ b/manifest.json
+@@ -20,3 +20,3 @@
+ 	"background": {
+-		"service_worker": "fontblocker.background.js"
++		"scripts": [ "fontblocker.logic.js", "fontblocker.background.js" ]
+ 	},

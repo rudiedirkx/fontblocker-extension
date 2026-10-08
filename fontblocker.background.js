@@ -1,4 +1,6 @@
-importScripts('fontblocker.logic.js');
+if (typeof importScripts == 'function') {
+	importScripts('fontblocker.logic.js');
+}
 
 function setPageActionIcon(tabId, disabled) {
 	var icon = disabled ? '128x128-disabled' : '128x128';
