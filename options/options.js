@@ -15,6 +15,13 @@ function init() {
 		return text.replace(/</g, '&lt;');
 	}
 
+	function afterSave(error) {
+		if (error) {
+			alert('Saving failed:\n\n' + error);
+		}
+		location.reload();
+	}
+
 	var replacementDropdown = selected => `<select name="replacement">
 		${fb.REPLACEMENTS.map(font => `<option style="font-family: ${font}"${selected===font?' selected':''}>${font}</option>`)}
 		</select>`;
@@ -99,17 +106,20 @@ function init() {
 				var addNextFont = function(callback) {
 					var font = newFonts.pop();
 					if (font) {
-						fb.add(font, function() {
-							addNextFont(callback);
+						fb.add(font, function(error) {
+							if (error) {
+								callback(error);
+							}
+							else {
+								addNextFont(callback);
+							}
 						});
 					}
 					else {
-						callback();
+						callback(null);
 					}
 				};
-				addNextFont(function() {
-					location.reload();
-				});
+				addNextFont(afterSave);
 			});
 		});
 
@@ -122,9 +132,7 @@ function init() {
 
 				fb.exists(font, (liveFont, list) => {
 					liveFont.replacement = e.target.value;
-					fb.storage.set({fonts: list}, function() {
-						document.location.reload();
-					});
+					fb.save(list, afterSave);
 				});
 			}
 		}, true);
@@ -138,9 +146,7 @@ function init() {
 				var index = Number(tr.dataset.index);
 				var font = list[index];
 				if ( confirm("Do you want to unblock\n\n    " + font.name + "\n\non\n\n    " + font.host + "\n\n?") ) {
-					fb.remove(font, function() {
-						location.reload();
-					});
+					fb.remove(font, afterSave);
 				}
 			}
 			else if ( e.target.matches('a.globalize-font') ) {
@@ -153,9 +159,7 @@ function init() {
 				font.host = '*';
 				delete font.added;
 
-				fb.add(font, function() {
-					location.reload();
-				});
+				fb.add(font, afterSave);
 			}
 		});
 

@@ -26,19 +26,26 @@ chrome.contextMenus.onClicked.addListener(async function(info, tab) {
 
 chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
 	if ( msg && msg.blockFont ) {
-		blockFont(msg.blockFont);
-		sendResponse({});
+		blockFont(msg.blockFont, function(error) {
+			sendResponse({error: error});
+		});
+		return true;
 	}
 });
 
-function blockFont(data) {
-	if ( !data || !data.name || !data.host ) return;
+function blockFont(data, callback) {
+	if ( !data || !data.name || !data.host ) {
+		callback('Invalid font');
+		return;
+	}
 	console.debug('Saving font', data);
 
 	fb.exists(data, function(exists) {
-		if (!exists) {
-			fb.add(data);
+		if (exists) {
+			callback(null);
+			return;
 		}
+		fb.add(data, callback);
 	});
 }
 

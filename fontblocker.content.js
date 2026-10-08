@@ -270,7 +270,13 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 				};
 				console.debug('Saving font', data);
 				chrome.runtime.sendMessage({blockFont: data}, function(response) {
-					// Don't care if that worked
+					var error = response && response.error;
+					if (chrome.runtime.lastError) {
+						error = chrome.runtime.lastError.message;
+					}
+					if (error) {
+						alert("Font is blocked on this page, but saving it failed:\n\n" + error);
+					}
 				});
 			}
 			else {
