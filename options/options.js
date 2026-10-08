@@ -12,7 +12,10 @@ function ready() {
 function init() {
 
 	function _html(text) {
-		return text.replace(/</g, '&lt;');
+		return text
+			.replace(/&/g, '&amp;')
+			.replace(/</g, '&lt;')
+			.replace(/"/g, '&quot;');
 	}
 
 	function afterSave(error) {

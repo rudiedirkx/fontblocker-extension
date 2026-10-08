@@ -166,7 +166,7 @@ function addFonts(fonts, replacements, type, manual) {
 	style.dataset.type = type;
 	style.dataset.count = fonts.length;
 	style.dataset.families = fonts.join('|');
-	style.innerHTML = css.join("\n");
+	style.textContent = css.join("\n");
 	(document.head || document.documentElement).appendChild(style);
 
 	// Remove from Font API
